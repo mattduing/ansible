@@ -294,7 +294,7 @@ def is_systemd_managed(module):
         # If all else fails, check if init is the systemd command, using comm as cmdline could be symlink
         try:
             with open('/proc/1/comm', 'r') as init_proc:
-                init = init_proc.readline().strip()
+                init = init_proc.readline(5_000_000).strip()
                 return init == 'systemd'
         except IOError:
             # If comm doesn't exist, old kernel, no systemd

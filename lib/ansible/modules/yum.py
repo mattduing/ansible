@@ -491,7 +491,7 @@ class YumModule(YumDnf):
         try:
             try:
                 with open(self.lockfile, 'r') as f:
-                    oldpid = int(f.readline())
+                    oldpid = int(f.readline(5_000_000))
             except ValueError:
                 # invalid data
                 os.unlink(self.lockfile)
@@ -504,7 +504,7 @@ class YumModule(YumDnf):
 
             try:
                 with open("/proc/%d/stat" % oldpid, 'r') as f:
-                    stat = f.readline()
+                    stat = f.readline(5_000_000)
 
                 if stat.split()[2] == 'Z':
                     # Zombie

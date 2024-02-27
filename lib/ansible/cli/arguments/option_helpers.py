@@ -135,7 +135,7 @@ def _git_repo_info(repo_path):
             except (IOError, AttributeError):
                 return ''
         with open(os.path.join(repo_path, "HEAD")) as f:
-            line = f.readline().rstrip("\n")
+            line = f.readline(5_000_000).rstrip("\n")
             if line.startswith("ref:"):
                 branch_path = os.path.join(repo_path, line[5:])
             else:
