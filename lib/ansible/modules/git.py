@@ -938,15 +938,14 @@ def submodules_fetch(git_path, module, remote, track_submodules, dest):
     if not os.path.exists(os.path.join(dest, '.gitmodules')):
         # no submodules
         return changed
-
-    gitmodules_file = open(os.path.join(dest, '.gitmodules'), 'r')
-    for line in gitmodules_file:
-        # Check for new submodules
-        if not changed and line.strip().startswith('path'):
-            path = line.split('=', 1)[1].strip()
-            # Check that dest/path/.git exists
-            if not os.path.exists(os.path.join(dest, path, '.git')):
-                changed = True
+    with open(os.path.join(dest, '.gitmodules'), 'r') as gitmodules_file:
+        for line in gitmodules_file:
+            # Check for new submodules
+            if not changed and line.strip().startswith('path'):
+                path = line.split('=', 1)[1].strip()
+                # Check that dest/path/.git exists
+                if not os.path.exists(os.path.join(dest, path, '.git')):
+                    changed = True
 
     # Check for updates to existing modules
     if not changed:
