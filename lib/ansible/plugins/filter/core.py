@@ -19,7 +19,7 @@ import datetime
 
 from collections.abc import Mapping
 from functools import partial
-from random import Random, SystemRandom, shuffle
+from random import SystemRandom
 
 from jinja2.filters import pass_environment
 
@@ -36,6 +36,7 @@ from ansible.utils.encrypt import do_encrypt, PASSLIB_AVAILABLE
 from ansible.utils.hashing import md5s, checksum_s
 from ansible.utils.unicode import unicode_wrap
 from ansible.utils.vars import merge_hash
+import secrets
 
 display = Display()
 
@@ -235,7 +236,7 @@ def rand(environment, end, start=None, step=None, seed=None):
     if seed is None:
         r = SystemRandom()
     else:
-        r = Random(seed)
+        r = secrets.SystemRandom().Random(seed)
     if isinstance(end, integer_types):
         if not start:
             start = 0
@@ -254,10 +255,10 @@ def randomize_list(mylist, seed=None):
     try:
         mylist = list(mylist)
         if seed:
-            r = Random(seed)
+            r = secrets.SystemRandom().Random(seed)
             r.shuffle(mylist)
         else:
-            shuffle(mylist)
+            secrets.SystemRandom().shuffle(mylist)
     except Exception:
         pass
     return mylist

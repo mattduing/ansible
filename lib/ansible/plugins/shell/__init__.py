@@ -18,7 +18,6 @@ from __future__ import annotations
 
 import os
 import os.path
-import random
 import re
 import shlex
 import time
@@ -29,6 +28,7 @@ from ansible.errors import AnsibleError
 from ansible.module_utils.common.text.converters import to_native
 from ansible.module_utils.six import text_type, string_types
 from ansible.plugins import AnsiblePlugin
+import secrets
 
 _USER_HOME_PATH_RE = re.compile(r'^~[_.A-Za-z0-9][-_.A-Za-z0-9]*$')
 
@@ -82,7 +82,7 @@ class ShellBase(AnsiblePlugin):
 
     @staticmethod
     def _generate_temp_dir_name():
-        return 'ansible-tmp-%s-%s-%s' % (time.time(), os.getpid(), random.randint(0, 2**48))
+        return 'ansible-tmp-%s-%s-%s' % (time.time(), os.getpid(), secrets.SystemRandom().randint(0, 2**48))
 
     def env_prefix(self, **kwargs):
         return ' '.join(['%s=%s' % (k, shlex.quote(text_type(v))) for k, v in kwargs.items()])

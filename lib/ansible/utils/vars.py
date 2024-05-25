@@ -18,7 +18,6 @@
 from __future__ import annotations
 
 import keyword
-import random
 import uuid
 
 from collections.abc import MutableMapping, MutableSequence
@@ -30,6 +29,7 @@ from ansible.errors import AnsibleError, AnsibleOptionsError
 from ansible.module_utils.six import string_types
 from ansible.module_utils.common.text.converters import to_native, to_text
 from ansible.parsing.splitter import parse_kv
+import secrets
 
 
 ADDITIONAL_PY2_KEYWORDS = frozenset(("True", "False", "None"))
@@ -37,7 +37,7 @@ ADDITIONAL_PY2_KEYWORDS = frozenset(("True", "False", "None"))
 _MAXSIZE = 2 ** 32
 cur_id = 0
 node_mac = ("%012x" % uuid.getnode())[:12]
-random_int = ("%08x" % random.randint(0, _MAXSIZE))[:8]
+random_int = ("%08x" % secrets.SystemRandom().randint(0, _MAXSIZE))[:8]
 
 
 def get_unique_id():
