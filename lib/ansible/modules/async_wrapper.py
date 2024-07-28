@@ -20,6 +20,7 @@ import syslog
 import multiprocessing
 
 from ansible.module_utils.common.text.converters import to_text, to_bytes
+from security import safe_command
 
 PY3 = sys.version_info[0] == 3
 
@@ -168,7 +169,7 @@ def _run_module(wrapped_cmd, jid):
         interpreter = _get_interpreter(cmd[0])
         if interpreter:
             cmd = interpreter + cmd
-        script = subprocess.Popen(cmd, shell=False, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+        script = safe_command.run(subprocess.Popen, cmd, shell=False, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                   stderr=subprocess.PIPE)
 
         (outdata, stderr) = script.communicate()

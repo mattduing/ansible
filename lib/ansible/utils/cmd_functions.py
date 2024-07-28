@@ -24,6 +24,7 @@ import subprocess
 import sys
 
 from ansible.module_utils.common.text.converters import to_bytes
+from security import safe_command
 
 
 def run_cmd(cmd, live=False, readsize=10):
@@ -32,7 +33,7 @@ def run_cmd(cmd, live=False, readsize=10):
     # subprocess should be passed byte strings.
     cmdargs = [to_bytes(a, errors='surrogate_or_strict') for a in cmdargs]
 
-    p = subprocess.Popen(cmdargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    p = safe_command.run(subprocess.Popen, cmdargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     stdout = b''
     stderr = b''

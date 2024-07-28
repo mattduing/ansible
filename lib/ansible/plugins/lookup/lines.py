@@ -3,6 +3,7 @@
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import annotations
+from security import safe_command
 
 DOCUMENTATION = """
     name: lines
@@ -53,7 +54,7 @@ class LookupModule(LookupBase):
 
         ret = []
         for term in terms:
-            p = subprocess.Popen(term, cwd=self._loader.get_basedir(), shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+            p = safe_command.run(subprocess.Popen, term, cwd=self._loader.get_basedir(), shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
             (stdout, stderr) = p.communicate()
             if p.returncode == 0:
                 ret.extend([to_text(l) for l in stdout.splitlines()])
