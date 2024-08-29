@@ -28,8 +28,7 @@ import os
 import re
 import io
 import zipfile
-
-import requests
+from security import safe_requests
 
 try:
     import argcomplete
@@ -134,7 +133,7 @@ def download_run(args):
 
     if args.run_metadata:
         run_url = 'https://dev.azure.com/ansible/ansible/_apis/pipelines/%s/runs/%s?api-version=6.0-preview.1' % (args.pipeline_id, args.run)
-        run_info_response = requests.get(run_url)
+        run_info_response = safe_requests.get(run_url)
         run_info_response.raise_for_status()
         run = run_info_response.json()
 
@@ -148,7 +147,7 @@ def download_run(args):
             with open(path, 'w') as metadata_fd:
                 metadata_fd.write(contents)
 
-    timeline_response = requests.get('https://dev.azure.com/ansible/ansible/_apis/build/builds/%s/timeline?api-version=6.0' % args.run)
+    timeline_response = safe_requests.get('https://dev.azure.com/ansible/ansible/_apis/build/builds/%s/timeline?api-version=6.0' % args.run)
     timeline_response.raise_for_status()
     timeline = timeline_response.json()
     roots = set()
@@ -185,7 +184,7 @@ def download_run(args):
 
     if args.artifacts:
         artifact_list_url = 'https://dev.azure.com/ansible/ansible/_apis/build/builds/%s/artifacts?api-version=6.0' % args.run
-        artifact_list_response = requests.get(artifact_list_url)
+        artifact_list_response = safe_requests.get(artifact_list_url)
         artifact_list_response.raise_for_status()
         for artifact in artifact_list_response.json()['value']:
             if artifact['source'] not in allowed or not args.match_artifact_name.match(artifact['name']):
@@ -193,7 +192,7 @@ def download_run(args):
             if args.verbose:
                 print('%s/%s' % (output_dir, artifact['name']))
             if not args.test:
-                response = requests.get(artifact['resource']['downloadUrl'])
+                response = safe_requests.get(artifact['resource']['downloadUrl'])
                 response.raise_for_status()
                 archive = zipfile.ZipFile(io.BytesIO(response.content))
                 archive.extractall(path=output_dir)
@@ -220,7 +219,7 @@ def download_run(args):
             if args.verbose:
                 print(log_path)
             if not args.test:
-                log = requests.get(r['log']['url'])
+                log = safe_requests.get(r['log']['url'])
                 log.raise_for_status()
                 open(log_path, 'wb').write(log.content)
 

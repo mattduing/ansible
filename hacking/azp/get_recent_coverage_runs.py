@@ -20,9 +20,9 @@
 from __future__ import annotations
 
 from ansible.utils.color import stringc
-import requests
 import sys
 import datetime
+from security import safe_requests
 
 # Following changes should be made to improve the overall style:
 # TODO use argparse for arguments.
@@ -39,14 +39,14 @@ if len(sys.argv) > 1:
 
 
 def get_coverage_runs():
-    list_response = requests.get("https://dev.azure.com/ansible/ansible/_apis/pipelines/%s/runs?api-version=6.0-preview.1" % PIPELINE_ID)
+    list_response = safe_requests.get("https://dev.azure.com/ansible/ansible/_apis/pipelines/%s/runs?api-version=6.0-preview.1" % PIPELINE_ID)
     list_response.raise_for_status()
 
     runs = list_response.json()
 
     coverage_runs = []
     for run_summary in runs["value"][0:1000]:
-        run_response = requests.get(run_summary['url'])
+        run_response = safe_requests.get(run_summary['url'])
 
         if run_response.status_code == 500 and 'Cannot serialize type Microsoft.Azure.Pipelines.WebApi.ContainerResource' in run_response.json()['message']:
             # This run used a container resource, which AZP can no longer serialize for anonymous requests.
@@ -66,7 +66,7 @@ def get_coverage_runs():
             if age > MAX_AGE:
                 break
 
-        artifact_response = requests.get("https://dev.azure.com/ansible/ansible/_apis/build/builds/%s/artifacts?api-version=6.0" % run['id'])
+        artifact_response = safe_requests.get("https://dev.azure.com/ansible/ansible/_apis/build/builds/%s/artifacts?api-version=6.0" % run['id'])
         artifact_response.raise_for_status()
 
         artifacts = artifact_response.json()['value']
