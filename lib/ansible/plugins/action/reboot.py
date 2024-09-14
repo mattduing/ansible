@@ -3,8 +3,6 @@
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import annotations
-
-import random
 import time
 
 from datetime import datetime, timedelta, timezone
@@ -14,6 +12,7 @@ from ansible.module_utils.common.text.converters import to_native, to_text
 from ansible.module_utils.common.validation import check_type_list, check_type_str
 from ansible.plugins.action import ActionBase
 from ansible.utils.display import Display
+import secrets
 
 display = Display()
 
@@ -300,7 +299,7 @@ class ActionModule(ActionBase):
                     except AnsibleConnectionFailure:
                         pass
                 # Use exponential backoff with a max timeout, plus a little bit of randomness
-                random_int = random.randint(0, 1000) / 1000
+                random_int = secrets.SystemRandom().randint(0, 1000) / 1000
                 fail_sleep = 2 ** fail_count + random_int
                 if fail_sleep > max_fail_sleep:
 

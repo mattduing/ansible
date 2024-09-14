@@ -12,7 +12,6 @@ from ansible.cli import CLI
 import datetime
 import os
 import platform
-import random
 import shlex
 import shutil
 import socket
@@ -27,6 +26,7 @@ from ansible.module_utils.common.text.converters import to_native, to_text
 from ansible.plugins.loader import module_loader
 from ansible.utils.cmd_functions import run_cmd
 from ansible.utils.display import Display
+import secrets
 
 
 display = Display()
@@ -140,7 +140,7 @@ class PullCLI(CLI):
 
         if options.sleep:
             try:
-                secs = random.randint(0, int(options.sleep))
+                secs = secrets.SystemRandom().randint(0, int(options.sleep))
                 options.sleep = secs
             except ValueError:
                 raise AnsibleOptionsError("%s is not a number." % options.sleep)
