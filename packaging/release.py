@@ -38,6 +38,7 @@ import zipfile
 import jinja2
 
 from packaging.version import Version, InvalidVersion
+from security import safe_command
 
 # region CLI Framework
 
@@ -80,7 +81,7 @@ def run(
     display.show(f"--> {shlex.join(str_args)}", color=Display.CYAN)
 
     try:
-        p = subprocess.run(str_args, check=True, text=True, env=str_env, cwd=cwd, capture_output=capture_output)
+        p = safe_command.run(subprocess.run, str_args, check=True, text=True, env=str_env, cwd=cwd, capture_output=capture_output)
     except subprocess.CalledProcessError as ex:
         # improve type hinting and include stdout/stderr (if any) in the message
         raise CalledProcessError(

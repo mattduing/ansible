@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import json
 import sys
+from security import safe_command
 
 # Used for determining if the system is running a new enough python version
 # and should only restrict on our documented minimum versions
@@ -2013,7 +2014,7 @@ class AnsibleModule(object):
         try:
             if self._debug:
                 self.log('Executing: ' + self._clean_args(args))
-            cmd = subprocess.Popen(args, **kwargs)
+            cmd = safe_command.run(subprocess.Popen, args, **kwargs)
             if before_communicate_callback:
                 before_communicate_callback(cmd)
 

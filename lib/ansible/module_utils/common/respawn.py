@@ -8,6 +8,7 @@ import subprocess
 import sys
 
 from ansible.module_utils.common.text.converters import to_bytes
+from security import safe_command
 
 
 def has_respawned():
@@ -39,7 +40,7 @@ def respawn_module(interpreter_path):
     stdin_read, stdin_write = os.pipe()
     os.write(stdin_write, to_bytes(payload))
     os.close(stdin_write)
-    rc = subprocess.call([interpreter_path, '--'], stdin=stdin_read)
+    rc = safe_command.run(subprocess.call, [interpreter_path, '--'], stdin=stdin_read)
     sys.exit(rc)  # pylint: disable=ansible-bad-function
 
 
@@ -58,7 +59,7 @@ def probe_interpreters_for_module(interpreter_paths, module_name):
         if not os.path.exists(interpreter_path):
             continue
         try:
-            rc = subprocess.call([interpreter_path, '-c', 'import {0}'.format(module_name)])
+            rc = safe_command.run(subprocess.call, [interpreter_path, '-c', 'import {0}'.format(module_name)])
             if rc == 0:
                 return interpreter_path
         except Exception:

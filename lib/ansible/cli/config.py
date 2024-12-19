@@ -30,6 +30,7 @@ from ansible.parsing.yaml.dumper import AnsibleDumper
 from ansible.utils.color import stringc
 from ansible.utils.display import Display
 from ansible.utils.path import unfrackpath
+from security import safe_command
 
 display = Display()
 
@@ -188,7 +189,7 @@ class ConfigCLI(CLI):
         try:
             editor = shlex.split(C.config.get_config_value('EDITOR'))
             editor.append(self.config_file)
-            subprocess.call(editor)
+            safe_command.run(subprocess.call, editor)
         except Exception as e:
             raise AnsibleError("Failed to open editor: %s" % to_native(e))
 

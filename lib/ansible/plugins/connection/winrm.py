@@ -3,6 +3,7 @@
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import annotations
+from security import safe_command
 
 DOCUMENTATION = """
     author: Ansible Core Team
@@ -411,7 +412,7 @@ class Connection(ConnectionBase):
             display.vvvv("calling kinit with subprocess for principal %s"
                          % principal)
             try:
-                p = subprocess.Popen(kinit_cmdline, stdin=subprocess.PIPE,
+                p = safe_command.run(subprocess.Popen, kinit_cmdline, stdin=subprocess.PIPE,
                                      stdout=subprocess.PIPE,
                                      stderr=subprocess.PIPE,
                                      env=krb5env)

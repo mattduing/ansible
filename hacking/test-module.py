@@ -50,6 +50,7 @@ from ansible.module_utils.common.text.converters import to_native, to_text
 from ansible.template import Templar
 
 import json
+from security import safe_command
 
 
 def parse():
@@ -186,7 +187,7 @@ def ansiballz_setup(modfile, modname, interpreters):
         command = []
     command.extend([modfile, 'explode'])
 
-    cmd = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    cmd = safe_command.run(subprocess.Popen, command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = cmd.communicate()
     out, err = to_text(out, errors='surrogate_or_strict'), to_text(err)
     lines = out.splitlines()
@@ -229,7 +230,7 @@ def runtest(modfile, argspath, modname, module_style, interpreters):
     if argspath is not None:
         invoke = "%s %s" % (invoke, argspath)
 
-    cmd = subprocess.Popen(invoke, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    cmd = safe_command.run(subprocess.Popen, invoke, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (out, err) = cmd.communicate()
     out, err = to_text(out), to_text(err)
 
@@ -258,9 +259,9 @@ def rundebug(debugger, modfile, argspath, modname, module_style, interpreters):
         modfile, argspath = ansiballz_setup(modfile, modname, interpreters)
 
     if argspath is not None:
-        subprocess.call("%s %s %s" % (debugger, modfile, argspath), shell=True)
+        safe_command.run(subprocess.call, "%s %s %s" % (debugger, modfile, argspath), shell=True)
     else:
-        subprocess.call("%s %s" % (debugger, modfile), shell=True)
+        safe_command.run(subprocess.call, "%s %s" % (debugger, modfile), shell=True)
 
 
 def main():

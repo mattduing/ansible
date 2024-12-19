@@ -14,6 +14,7 @@ import subprocess
 import tempfile
 import typing as t
 import urllib.request
+from security import safe_command
 
 
 @dataclasses.dataclass(frozen=True)
@@ -71,7 +72,7 @@ def upload_files(codecov_bin: pathlib.Path, files: t.Tuple[CoverageFile, ...], d
             print(f'DRY-RUN: Would run command: {cmd}')
             continue
 
-        subprocess.run(cmd, check=True)
+        safe_command.run(subprocess.run, cmd, check=True)
 
 
 def download_file(url: str, dest: pathlib.Path, flags: int, dry_run: bool = False) -> None:
