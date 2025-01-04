@@ -7,6 +7,7 @@
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import annotations
+import secrets
 
 
 DOCUMENTATION = '''
@@ -361,7 +362,6 @@ import datetime
 import fnmatch
 import locale as locale_module
 import os
-import random
 import re
 import shutil
 import sys
@@ -1369,7 +1369,7 @@ def main():
                     err = ''
                     update_cache_retries = module.params.get('update_cache_retries')
                     update_cache_retry_max_delay = module.params.get('update_cache_retry_max_delay')
-                    randomize = random.randint(0, 1000) / 1000.0
+                    randomize = secrets.SystemRandom().randint(0, 1000) / 1000.0
 
                     for retry in range(update_cache_retries):
                         try:

@@ -26,7 +26,6 @@ import itertools
 import traceback
 
 from operator import attrgetter
-from random import shuffle
 
 from ansible import constants as C
 from ansible.errors import AnsibleError, AnsibleOptionsError, AnsibleParserError
@@ -40,6 +39,7 @@ from ansible.utils.path import unfrackpath
 from ansible.utils.display import Display
 from ansible.utils.vars import combine_vars
 from ansible.vars.plugins import get_vars_from_inventory_sources
+import secrets
 
 display = Display()
 
@@ -419,7 +419,7 @@ class InventoryManager(object):
             else:
                 hosts = self._hosts_patterns_cache[pattern_hash][:]
                 if order == 'shuffle':
-                    shuffle(hosts)
+                    secrets.SystemRandom().shuffle(hosts)
                 elif order not in [None, 'inventory']:
                     raise AnsibleOptionsError("Invalid 'order' specified for inventory hosts: %s" % order)
 

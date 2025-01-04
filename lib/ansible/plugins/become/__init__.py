@@ -6,18 +6,18 @@ from __future__ import annotations
 import shlex
 
 from abc import abstractmethod
-from random import choice
 from string import ascii_lowercase
 from gettext import dgettext
 
 from ansible.errors import AnsibleError
 from ansible.module_utils.common.text.converters import to_bytes
 from ansible.plugins import AnsiblePlugin
+import secrets
 
 
 def _gen_id(length=32):
     ''' return random string used to identify the current privilege escalation '''
-    return ''.join(choice(ascii_lowercase) for x in range(length))
+    return ''.join(secrets.choice(ascii_lowercase) for x in range(length))
 
 
 class BecomeBase(AnsiblePlugin):
