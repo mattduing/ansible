@@ -371,7 +371,7 @@ def head_splitter(headfile, remote, module=None, fail_on_error=False):
         rawdata = None
         try:
             f = open(headfile, 'r')
-            rawdata = f.readline()
+            rawdata = f.readline(5_000_000)
             f.close()
         except Exception:
             if fail_on_error and module:
