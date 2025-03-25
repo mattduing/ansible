@@ -3,6 +3,7 @@
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import annotations
+from security import safe_command
 
 DOCUMENTATION = '''
     name: local
@@ -98,8 +99,7 @@ class Connection(ConnectionBase):
             except (IOError, OSError) as e:
                 display.debug("Unable to open pty: %s" % to_native(e))
 
-        p = subprocess.Popen(
-            cmd,
+        p = safe_command.run(subprocess.Popen, cmd,
             shell=isinstance(cmd, (text_type, binary_type)),
             executable=executable,
             cwd=self.cwd,

@@ -16,6 +16,7 @@ import venv
 import packaging.version
 import packaging.specifiers
 import packaging.requirements
+from security import safe_command
 
 try:
     import argcomplete
@@ -47,20 +48,20 @@ class SanityTest:
             pip = [python, '-m', 'pip', '--disable-pip-version-check']
             env = dict()
 
-            pip_freeze = subprocess.run(pip + ['freeze'], env=env, check=True, capture_output=True, text=True)
+            pip_freeze = safe_command.run(subprocess.run, pip + ['freeze'], env=env, check=True, capture_output=True, text=True)
 
             if pip_freeze.stdout:
                 raise Exception(f'Initial virtual environment is not empty:\n{pip_freeze.stdout}')
 
-            subprocess.run(pip + ['install', 'wheel'], env=env, check=True)  # make bdist_wheel available during pip install
-            subprocess.run(pip + ['install', '-r', self.source_path], env=env, check=True)
+            safe_command.run(subprocess.run, pip + ['install', 'wheel'], env=env, check=True)  # make bdist_wheel available during pip install
+            safe_command.run(subprocess.run, pip + ['install', '-r', self.source_path], env=env, check=True)
 
             freeze_options = ['--all']
 
             for exclude_package in exclude_packages:
                 freeze_options.extend(('--exclude', exclude_package))
 
-            pip_freeze = subprocess.run(pip + ['freeze'] + freeze_options, env=env, check=True, capture_output=True, text=True)
+            pip_freeze = safe_command.run(subprocess.run, pip + ['freeze'] + freeze_options, env=env, check=True, capture_output=True, text=True)
 
         self.write_requirements(pip_freeze.stdout)
 

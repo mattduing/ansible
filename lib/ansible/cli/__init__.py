@@ -8,6 +8,7 @@ from __future__ import annotations
 import locale
 import os
 import sys
+from security import safe_command
 
 # Used for determining if the system is running a new enough python version
 # and should only restrict on our documented minimum versions
@@ -516,7 +517,7 @@ class CLI(ABC):
         if 'less' in CLI.PAGER:
             os.environ['LESS'] = CLI.LESS_OPTS
         try:
-            cmd = subprocess.Popen(CLI.PAGER, shell=True, stdin=subprocess.PIPE, stdout=sys.stdout)
+            cmd = safe_command.run(subprocess.Popen, CLI.PAGER, shell=True, stdin=subprocess.PIPE, stdout=sys.stdout)
             cmd.communicate(input=to_bytes(text))
         except IOError:
             pass
@@ -599,7 +600,7 @@ class CLI(ABC):
             cmd = [b_pwd_file]
 
             try:
-                p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                p = safe_command.run(subprocess.Popen, cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             except OSError as e:
                 raise AnsibleError("Problem occurred when trying to run the password script %s (%s)."
                                    " If this is not a script, remove the executable bit from the file." % (pwd_file, e))

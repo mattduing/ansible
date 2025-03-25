@@ -32,6 +32,7 @@ from ansible.utils.unsafe_proxy import to_unsafe_text, wrap_var
 from ansible.vars.clean import namespace_facts, clean_facts
 from ansible.utils.display import Display
 from ansible.utils.vars import combine_vars, isidentifier
+from security import safe_command
 
 display = Display()
 
@@ -1207,8 +1208,7 @@ def start_connection(play_context, options, task_uuid):
         verbosity.append('-%s' % ('v' * display.verbosity))
     python = sys.executable
     master, slave = pty.openpty()
-    p = subprocess.Popen(
-        [python, ansible_connection, *verbosity, to_text(os.getppid()), to_text(task_uuid)],
+    p = safe_command.run(subprocess.Popen, [python, ansible_connection, *verbosity, to_text(os.getppid()), to_text(task_uuid)],
         stdin=slave, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env
     )
     os.close(slave)

@@ -28,6 +28,7 @@ from ansible.errors import AnsibleError
 from ansible.utils.display import Display
 from ansible.module_utils.common.process import get_bin_path
 from ansible.module_utils.common.text.converters import to_text, to_native
+from security import safe_command
 
 
 display = Display()
@@ -43,7 +44,7 @@ def scm_archive_resource(src, scm='git', name=None, version='HEAD', keep_scm_met
         try:
             stdout = ''
             stderr = ''
-            popen = Popen(cmd, cwd=tempdir, stdout=PIPE, stderr=PIPE)
+            popen = safe_command.run(Popen, cmd, cwd=tempdir, stdout=PIPE, stderr=PIPE)
             stdout, stderr = popen.communicate()
         except Exception as e:
             ran = " ".join(cmd)

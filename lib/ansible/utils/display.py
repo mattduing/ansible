@@ -16,6 +16,7 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import annotations
+from security import safe_command
 
 try:
     import curses
@@ -300,7 +301,7 @@ class Display(metaclass=Singleton):
 
         if self.b_cowsay:
             try:
-                cmd = subprocess.Popen([self.b_cowsay, "-l"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                cmd = safe_command.run(subprocess.Popen, [self.b_cowsay, "-l"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 (out, err) = cmd.communicate()
                 if cmd.returncode:
                     raise Exception
@@ -595,7 +596,7 @@ class Display(metaclass=Singleton):
             runcmd.append(b'-f')
             runcmd.append(to_bytes(thecow))
         runcmd.append(to_bytes(msg))
-        cmd = subprocess.Popen(runcmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        cmd = safe_command.run(subprocess.Popen, runcmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         (out, err) = cmd.communicate()
         self.display(u"%s\n" % to_text(out), color=color)
 

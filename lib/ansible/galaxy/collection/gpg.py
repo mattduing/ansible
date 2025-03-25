@@ -18,6 +18,7 @@ import typing as t
 from dataclasses import dataclass, fields as dc_fields
 from functools import partial
 from urllib.error import HTTPError, URLError
+from security import safe_command
 
 if t.TYPE_CHECKING:
     from ansible.utils.display import Display
@@ -72,8 +73,7 @@ def run_gpg_verify(
     display.vvvv(f"Running command '{cmd}'")
 
     try:
-        p = subprocess.Popen(
-            cmd,
+        p = safe_command.run(subprocess.Popen, cmd,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
