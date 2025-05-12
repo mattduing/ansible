@@ -2,6 +2,7 @@
 # Copyright (c) 2017 Ansible Project
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 from __future__ import annotations
+import defusedxml.ElementTree
 
 DOCUMENTATION = '''
 name: powershell
@@ -19,7 +20,6 @@ import os
 import re
 import shlex
 import pkgutil
-import xml.etree.ElementTree as ET
 import ntpath
 
 from ansible.module_utils.common.text.converters import to_bytes, to_text
@@ -46,7 +46,7 @@ def _parse_clixml(data, stream="Error"):
         current_element = data[data.find(b"<Objs "):end_idx]
         data = data[end_idx:]
 
-        clixml = ET.fromstring(current_element)
+        clixml = defusedxml.ElementTree.fromstring(current_element)
         namespace_match = re.match(r'{(.*)}', clixml.tag)
         namespace = "{%s}" % namespace_match.group(1) if namespace_match else ""
 

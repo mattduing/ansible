@@ -9,10 +9,9 @@ import dataclasses
 import datetime
 import decimal
 
-from xml.dom import minidom
-
 # noinspection PyPep8Naming
 from xml.etree import ElementTree as ET
+import defusedxml.minidom
 
 
 @dataclasses.dataclass
@@ -275,4 +274,4 @@ def _attributes(**kwargs) -> dict[str, str]:
 
 def _pretty_xml(element: ET.Element) -> str:
     """Return a pretty formatted XML string representing the given element."""
-    return minidom.parseString(ET.tostring(element, encoding='unicode')).toprettyxml()
+    return defusedxml.minidom.parseString(ET.tostring(element, encoding='unicode')).toprettyxml()
