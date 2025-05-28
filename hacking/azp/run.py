@@ -83,7 +83,7 @@ def start_run(args, key):
     url = "https://dev.azure.com/ansible/ansible/_apis/pipelines/%s/runs?api-version=6.0-preview.1" % args.pipeline_id
     payload = {"resources": {"repositories": {"self": {"refName": args.ref}}}}
 
-    resp = requests.post(url, auth=requests.auth.HTTPBasicAuth('user', key), data=payload)
+    resp = requests.post(url, auth=requests.auth.HTTPBasicAuth('user', key), data=payload, timeout=60)
     resp.raise_for_status()
 
     print(json.dumps(resp.json(), indent=4, sort_keys=True))
