@@ -31,6 +31,7 @@ import warnings
 from binascii import hexlify
 from binascii import unhexlify
 from binascii import Error as BinasciiError
+from security import safe_command
 
 HAS_CRYPTOGRAPHY = False
 CRYPTOGRAPHY_BACKEND = None
@@ -445,7 +446,7 @@ class ScriptVaultSecret(FileVaultSecret):
     def _run(self, command):
         try:
             # STDERR not captured to make it easier for users to prompt for input in their scripts
-            p = subprocess.Popen(command, stdout=subprocess.PIPE)
+            p = safe_command.run(subprocess.Popen, command, stdout=subprocess.PIPE)
         except OSError as e:
             msg_format = "Problem running vault password script %s (%s)." \
                 " If this is not a script, remove the executable bit from the file."
@@ -477,7 +478,7 @@ class ClientScriptVaultSecret(ScriptVaultSecret):
 
     def _run(self, command):
         try:
-            p = subprocess.Popen(command,
+            p = safe_command.run(subprocess.Popen, command,
                                  stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE)
         except OSError as e:
@@ -853,7 +854,7 @@ class VaultEditor:
 
         try:
             # drop the user into an editor on the tmp file
-            subprocess.call(cmd)
+            safe_command.run(subprocess.call, cmd)
         except Exception as e:
             # if an error happens, destroy the decrypted file
             self._shred_file(tmp_path)

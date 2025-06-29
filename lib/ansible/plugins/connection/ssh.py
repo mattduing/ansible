@@ -5,6 +5,7 @@
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import annotations
+from security import safe_command
 
 DOCUMENTATION = '''
     name: ssh
@@ -954,9 +955,9 @@ class Connection(ConnectionBase):
                 master, slave = pty.openpty()
                 if PY3 and conn_password:
                     # pylint: disable=unexpected-keyword-arg
-                    p = subprocess.Popen(cmd, stdin=slave, stdout=subprocess.PIPE, stderr=subprocess.PIPE, pass_fds=self.sshpass_pipe)
+                    p = safe_command.run(subprocess.Popen, cmd, stdin=slave, stdout=subprocess.PIPE, stderr=subprocess.PIPE, pass_fds=self.sshpass_pipe)
                 else:
-                    p = subprocess.Popen(cmd, stdin=slave, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                    p = safe_command.run(subprocess.Popen, cmd, stdin=slave, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 stdin = os.fdopen(master, 'wb', 0)
                 os.close(slave)
             except (OSError, IOError):
@@ -966,10 +967,10 @@ class Connection(ConnectionBase):
             try:
                 if PY3 and conn_password:
                     # pylint: disable=unexpected-keyword-arg
-                    p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                    p = safe_command.run(subprocess.Popen, cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                          stderr=subprocess.PIPE, pass_fds=self.sshpass_pipe)
                 else:
-                    p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                    p = safe_command.run(subprocess.Popen, cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                          stderr=subprocess.PIPE)
                 stdin = p.stdin  # type: ignore[assignment] # stdin will be set and not None due to the calls above
             except (OSError, IOError) as e:
@@ -1418,7 +1419,7 @@ class Connection(ConnectionBase):
         # 'check' will determine this.
         cmd = self._build_command(self.get_option('ssh_executable'), 'ssh', '-O', 'check', self.host)
         display.vvv(u'sending connection check: %s' % to_text(cmd))
-        p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p = safe_command.run(subprocess.Popen, cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = p.communicate()
         status_code = p.wait()
         if status_code != 0:
@@ -1429,7 +1430,7 @@ class Connection(ConnectionBase):
         if run_reset:
             cmd = self._build_command(self.get_option('ssh_executable'), 'ssh', '-O', 'stop', self.host)
             display.vvv(u'sending connection stop: %s' % to_text(cmd))
-            p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            p = safe_command.run(subprocess.Popen, cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             stdout, stderr = p.communicate()
             status_code = p.wait()
             if status_code != 0:

@@ -4,6 +4,7 @@
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import annotations
+from security import safe_command
 
 
 DOCUMENTATION = r'''
@@ -1205,7 +1206,7 @@ class User(object):
             env = os.environ.copy()
             env['LC_ALL'] = get_best_parsable_locale(self.module)
             try:
-                p = subprocess.Popen([to_bytes(c) for c in cmd],
+                p = safe_command.run(subprocess.Popen, [to_bytes(c) for c in cmd],
                                      stdin=slave_in_fd,
                                      stdout=slave_out_fd,
                                      stderr=slave_err_fd,

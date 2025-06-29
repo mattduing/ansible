@@ -15,6 +15,7 @@ import sys
 import typing as t
 
 import yaml
+from security import safe_command
 
 try:
     # noinspection PyPackageRequirements
@@ -43,7 +44,7 @@ class Issue:
             for label in self.labels:
                 cmd.extend(('--label', label))
 
-        process = subprocess.run(cmd, capture_output=True, check=True)
+        process = safe_command.run(subprocess.run, cmd, capture_output=True, check=True)
         url = process.stdout.decode().strip()
         return url
 
@@ -351,7 +352,7 @@ def run_sanity_test(test_name: str) -> list[str]:
     os.rename(skip_path, skip_temp_path)  # make sure ansible-test isn't configured to skip any tests
 
     try:
-        process = subprocess.run(cmd, capture_output=True, check=True)
+        process = safe_command.run(subprocess.run, cmd, capture_output=True, check=True)
     finally:
         os.rename(skip_temp_path, skip_path)  # restore the skip entries
 

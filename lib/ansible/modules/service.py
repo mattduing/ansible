@@ -4,6 +4,7 @@
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import annotations
+from security import safe_command
 
 
 DOCUMENTATION = r'''
@@ -297,7 +298,7 @@ class Service(object):
 
             # chkconfig localizes messages and we're screen scraping so make
             # sure we use the C locale
-            p = subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=lang_env, preexec_fn=lambda: os.close(pipe[1]))
+            p = safe_command.run(subprocess.Popen, cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=lang_env, preexec_fn=lambda: os.close(pipe[1]))
             stdout = b("")
             stderr = b("")
             fds = [p.stdout, p.stderr]
